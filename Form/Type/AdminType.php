@@ -24,6 +24,7 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\OptionsResolver\OptionsResolverInterface;
 use Symfony\Component\PropertyAccess\Exception\NoSuchIndexException;
 use Symfony\Component\PropertyAccess\PropertyAccessor;
+use Sonata\AdminBundle\Form\EventListener\SetSubjectEventListener;
 
 /**
  * @author Thomas Rabaix <thomas.rabaix@sonata-project.org>
@@ -65,6 +66,7 @@ class AdminType extends AbstractType
                         );
                         if ($subjectCollection instanceof Collection) {
                             $subject = $subjectCollection->get(trim($options['property_path'], '[]'));
+
                         }
                     } else {
                         // for PropertyAccessor >= 2.5
@@ -73,16 +75,17 @@ class AdminType extends AbstractType
                             $options['property_path']
                         );
                     }
+
                     $builder->setData($subject);
                 }
             } catch (NoSuchIndexException $e) {
                 // no object here
             }
         }
-
         $admin->setSubject($builder->getData());
 
         $admin->defineFormBuilder($builder);
+        $builder->addEventSubscriber(new SetSubjectEventListener($admin));
 
         $builder->addModelTransformer(new ArrayToModelTransformer($admin->getModelManager(), $admin->getClass()));
     }
