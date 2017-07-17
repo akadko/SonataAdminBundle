@@ -3368,4 +3368,9 @@ EOT;
             $extension->configureRoutes($this, $this->routes);
         }
     }
+
+    public function reconfigureFormFields(Form $form)
+    {
+
+    }
 }
